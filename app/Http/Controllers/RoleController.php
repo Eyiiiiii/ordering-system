@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -12,6 +13,8 @@ use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
      */
@@ -23,9 +26,6 @@ class RoleController extends Controller
 
         return Inertia::render('Roles/Index', [
             'roles' => $roles,
-            'auth' => [
-                'user' => auth()->user()->load('roles.permissions', 'permissions')
-            ]
         ]);
     }
 
@@ -43,9 +43,6 @@ class RoleController extends Controller
 
         return Inertia::render('Roles/Create', [
             'permissions' => $permissions,
-            'auth' => [
-                'user' => auth()->user()->load('roles.permissions', 'permissions')
-            ]
         ]);
     }
 
@@ -84,9 +81,6 @@ class RoleController extends Controller
 
         return Inertia::render('Roles/Show', [
             'role' => $role,
-            'auth' => [
-                'user' => auth()->user()->load('roles.permissions', 'permissions')
-            ]
         ]);
     }
 
@@ -107,9 +101,6 @@ class RoleController extends Controller
         return Inertia::render('Roles/Edit', [
             'role' => $role,
             'permissions' => $permissions,
-            'auth' => [
-                'user' => auth()->user()->load('roles.permissions', 'permissions')
-            ]
         ]);
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -12,6 +13,8 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
      */
@@ -32,9 +35,6 @@ class UserController extends Controller
 
         return Inertia::render('Users/Index', [
             'users' => $users,
-            'auth' => [
-                'user' => auth()->user()->load('roles.permissions', 'permissions')
-            ]
         ]);
     }
 
@@ -49,9 +49,6 @@ class UserController extends Controller
         
         return Inertia::render('Users/Create', [
             'roles' => $roles,
-            'auth' => [
-                'user' => auth()->user()->load('roles.permissions', 'permissions')
-            ]
         ]);
     }
 
@@ -92,9 +89,6 @@ class UserController extends Controller
 
         return Inertia::render('Users/Show', [
             'user' => $user,
-            'auth' => [
-                'user' => auth()->user()->load('roles.permissions', 'permissions')
-            ]
         ]);
     }
 
@@ -109,9 +103,6 @@ class UserController extends Controller
 
         return Inertia::render('Users/Edit', [
             'user' => $user,
-            'auth' => [
-                'user' => auth()->user()->load('roles.permissions', 'permissions')
-            ]
         ]);
     }
 

@@ -13,19 +13,25 @@ class RolePermissionSeeder extends Seeder
      */
     public function run(): void
     {   
-        $adminPermissions = [
+        $orderPermissions = [
             'View Orders',
             'Create Orders',
             'Update Orders',
             'Delete Orders',
         ];
         
-        // Create hierarchical CRUD permissions for Orders
         $userPermissions = [
-            'View Orders',
-            'Create Orders',
-            'Update Orders',
-            'Delete Orders',
+            'View Users',
+            'Create Users',
+            'Update Users',
+            'Delete Users',
+        ];
+
+        $rolePermissions = [
+            'View Roles',
+            'Create Roles',
+            'Update Roles',
+            'Delete Roles',
         ];
 
         $activityLogPermissions = [
@@ -33,8 +39,9 @@ class RolePermissionSeeder extends Seeder
         ];
 
         $permissions = array_merge(
-            $adminPermissions,
+            $orderPermissions,
             $userPermissions,
+            $rolePermissions,
             $activityLogPermissions,
         );
 
@@ -42,16 +49,12 @@ class RolePermissionSeeder extends Seeder
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
 
-        $roles = [
-            // 'Dev',
-            'Admin',
-            'User',
-        ];
+        // Admin role gets all permissions
+        $adminRole = Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
+        $adminRole->syncPermissions($permissions);
 
-        foreach ($roles as $roleName) {
-            $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
-            $role->syncPermissions($permissions);
-        }
+        // User role gets limited permissions
+        $userRole = Role::firstOrCreate(['name' => 'User', 'guard_name' => 'web']);
+        $userRole->syncPermissions($orderPermissions);
     }
 }
-

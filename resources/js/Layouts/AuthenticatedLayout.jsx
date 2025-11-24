@@ -14,15 +14,17 @@ export default function AuthenticatedLayout({ header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
 
+    // Check if user is admin (has admin role) - DEFINE THIS FIRST
+    const isAdmin = user.roles?.some(role => role.name === 'Admin');
+
     // Check if user has specific permissions
-    const canViewUsers = user.permissions?.some(permission => permission.name === 'View Users') || 
+    const canViewUsers = isAdmin || 
+        user.permissions?.some(permission => permission.name === 'View Users') || 
         user.roles?.some(role => role.permissions?.some(permission => permission.name === 'View Users'));
     
-    const canViewRoles = user.permissions?.some(permission => permission.name === 'View Roles') || 
+    const canViewRoles = isAdmin || 
+        user.permissions?.some(permission => permission.name === 'View Roles') || 
         user.roles?.some(role => role.permissions?.some(permission => permission.name === 'View Roles'));
-
-    // Check if user is admin (has admin role)
-    const isAdmin = user.roles?.some(role => role.name === 'Admin');
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -52,7 +54,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                 </NavLink>
 
                                 {/* Only show Roles and Permissions if user has permission or is admin */}
-                                {(canViewRoles || isAdmin) && (
+                                {canViewRoles && (
                                     <NavLink
                                         href={route('roles.index')}
                                         active={route().current('roles.*')}
@@ -62,7 +64,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                 )}
 
                                 {/* Only show Users if user has permission or is admin */}
-                                {(canViewUsers || isAdmin) && (
+                                {canViewUsers && (
                                     <NavLink
                                         href={route('users.index')}
                                         active={route().current('users.*')}
@@ -197,7 +199,7 @@ export default function AuthenticatedLayout({ header, children }) {
                         </ResponsiveNavLink>
 
                         {/* Only show Roles and Permissions if user has permission or is admin */}
-                        {(canViewRoles || isAdmin) && (
+                        {canViewRoles && (
                             <ResponsiveNavLink
                                 href={route('roles.index')}
                                 active={route().current('roles.*')}
@@ -207,7 +209,7 @@ export default function AuthenticatedLayout({ header, children }) {
                         )}
 
                         {/* Only show Users if user has permission or is admin */}
-                        {(canViewUsers || isAdmin) && (
+                        {canViewUsers && (
                             <ResponsiveNavLink
                                 href={route('users.index')}
                                 active={route().current('users.*')}
