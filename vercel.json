@@ -9,5 +9,6 @@
 "rewrites": [
 	{"source": "/(.*)", "destination": "/api/lambda.php"}
 	],
-    "buildCommand": "echo skip..."
+    "installCommand": "composer install --no-dev --optimize-autoloader && npm install && npm run build",
+    "buildCommand": "mkdir -p public/build && echo 'Build assets ready'"
 }
