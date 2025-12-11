@@ -4,7 +4,10 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import { X, CheckCircle } from 'lucide-react';
 
 export default function Index({ products, brands, categories, filters }) {
-    const { flash } = usePage().props;
+    const page = usePage();
+    const { flash } = page.props;
+    const user = page.props.auth?.user || null;
+    const isAdmin = !!user && (user.roles || []).some(r => (r.name || '').toLowerCase() === 'admin');
     const [showFlash, setShowFlash] = useState(false);
 
     useEffect(() => {
@@ -231,7 +234,7 @@ export default function Index({ products, brands, categories, filters }) {
                                     <div
                                         key={product.id}
                                         onClick={() => openModal(product)}
-                                        className="group cursor-pointer overflow-hidden rounded-lg bg-white shadow-sm transition hover:shadow-lg"
+                                        className="group relative cursor-pointer overflow-hidden rounded-lg bg-white shadow-sm transition hover:shadow-lg"
                                     >
                                         <div className="aspect-square overflow-hidden bg-gray-200">
                                             <img
@@ -245,6 +248,33 @@ export default function Index({ products, brands, categories, filters }) {
                                                 <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                                                     {product.brand}
                                                 </span>
+                                                {isAdmin && (
+                                                    <div className="flex items-center gap-1 text-xs">
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                router.get(route('products.edit', product.id));
+                                                            }}
+                                                            className="text-gray-400 hover:text-gray-600 transition"
+                                                            title="Edit"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <span className="text-gray-300">•</span>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
+                                                                    router.delete(route('products.destroy', product.id));
+                                                                }
+                                                            }}
+                                                            className="text-gray-400 hover:text-gray-600 transition"
+                                                            title="Delete"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                )}
                                                 <span className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">
                                                     {product.category}
                                                 </span>
