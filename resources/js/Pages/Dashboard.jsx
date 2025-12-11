@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import {
     ResponsiveContainer,
     StackedCarousel,
@@ -8,6 +8,8 @@ import {
 import Fab from '@mui/material/Fab';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import FeaturedCategoriesCard from '@/Components/FeaturedCategoriesCard';
+import FeaturedCategoriesModal from '@/Components/FeaturedCategoriesModal';
 
 const featuredCapsule = [
     {
@@ -50,6 +52,88 @@ const featuredCapsule = [
 
 const stackDepth = 5;
 
+const featuredCategories = [
+    {
+        id: 1,
+        name: 'Cloth 1',
+        brand: 'Premium Collection',
+        description: 'High-quality fabric with modern design aesthetic.',
+        sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+        colors: [
+            { name: 'Black', hex: '#000000' },
+            { name: 'White', hex: '#FFFFFF' },
+            { name: 'Navy', hex: '#001F3F' },
+            { name: 'Grey', hex: '#808080' },
+        ],
+    },
+    {
+        id: 2,
+        name: 'Cloth 2',
+        brand: 'Urban Wear',
+        description: 'Comfortable everyday wear for casual occasions.',
+        sizes: ['XS', 'S', 'M', 'L', 'XL'],
+        colors: [
+            { name: 'Red', hex: '#FF4136' },
+            { name: 'Blue', hex: '#0074D9' },
+            { name: 'Green', hex: '#2ECC40' },
+            { name: 'Beige', hex: '#F0E68C' },
+        ],
+    },
+    {
+        id: 3,
+        name: 'Cloth 3',
+        brand: 'Elegance Line',
+        description: 'Sophisticated style for professional settings.',
+        sizes: ['S', 'M', 'L', 'XL'],
+        colors: [
+            { name: 'Burgundy', hex: '#800020' },
+            { name: 'Charcoal', hex: '#36454F' },
+            { name: 'Cream', hex: '#FFFDD0' },
+        ],
+    },
+    {
+        id: 4,
+        name: 'Kids',
+        brand: 'Young Style',
+        description: 'Playful and durable clothing for children.',
+        sizes: ['2-3Y', '4-5Y', '6-7Y', '8-9Y', '10-12Y'],
+        colors: [
+            { name: 'Rainbow', hex: '#FF6B9D' },
+            { name: 'Sky Blue', hex: '#87CEEB' },
+            { name: 'Lime', hex: '#32CD32' },
+            { name: 'Sunny Yellow', hex: '#FFD700' },
+            { name: 'Orange', hex: '#FF8C00' },
+        ],
+    },
+    {
+        id: 5,
+        name: 'Women',
+        brand: 'Feminine Collection',
+        description: 'Stylish and comfortable wear designed for women.',
+        sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+        colors: [
+            { name: 'Blush', hex: '#FFB6C1' },
+            { name: 'Mauve', hex: '#E0B0FF' },
+            { name: 'Teal', hex: '#008080' },
+            { name: 'Rose Gold', hex: '#B76E79' },
+        ],
+    },
+    {
+        id: 6,
+        name: 'Men',
+        brand: 'Classic Menswear',
+        description: 'Timeless pieces for the modern man.',
+        sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+        colors: [
+            { name: 'Black', hex: '#000000' },
+            { name: 'Navy', hex: '#001F3F' },
+            { name: 'Grey', hex: '#A9A9A9' },
+            { name: 'Brown', hex: '#8B4513' },
+        ],
+    },
+];
+
+
 const Slide = ({ data, dataIndex }) => {
     const item = data[dataIndex];
 
@@ -74,6 +158,8 @@ const Slide = ({ data, dataIndex }) => {
 
 export default function Dashboard() {
     const [activeIndex, setActiveIndex] = useState(0);
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const carouselRef = useRef();
 
     const stackedCards = useMemo(() => {
@@ -83,6 +169,30 @@ export default function Dashboard() {
         }
         return cards;
     }, [activeIndex]);
+
+    const handleViewDetails = (category) => {
+        setSelectedCategory(category);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setTimeout(() => setSelectedCategory(null), 300);
+    };
+
+    const handleEditCategory = (category) => {
+        // Placeholder: Replace with actual edit route when available
+        // e.g., router.get(route('categories.edit', category.id));
+        console.log('Edit category:', category);
+        alert(`Edit feature for "${category.name}" - to be implemented`);
+    };
+
+    const handleDeleteCategory = (category) => {
+        // Placeholder: Replace with actual delete route when available
+        // e.g., router.delete(route('categories.destroy', category.id));
+        console.log('Delete category:', category);
+        alert(`Delete feature for "${category.name}" - to be implemented`);
+    };
 
     const handleNext = () => {
         if (carouselRef.current) {
@@ -181,8 +291,39 @@ export default function Dashboard() {
                             })}
                         </div>
                     </div>
+
+                    {/* Featured Categories Section */}
+                    <div className="mt-16 space-y-6">
+                        <div className="flex flex-col gap-2">
+                            <p className="text-xs uppercase tracking-[0.4em] text-gray-400">
+                                Featured Categories
+                            </p>
+                            <h2 className="text-2xl font-semibold text-gray-900">
+                                Shop by Category
+                            </h2>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            {featuredCategories.map((category) => (
+                                <FeaturedCategoriesCard
+                                    key={category.id}
+                                    category={category}
+                                    onViewDetails={() => handleViewDetails(category)}
+                                    onEdit={handleEditCategory}
+                                    onDelete={handleDeleteCategory}
+                                />
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            {/* Modal */}
+            <FeaturedCategoriesModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                category={selectedCategory}
+            />
 
             <style>{`
                 .portrait-carousel {
